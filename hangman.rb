@@ -1,20 +1,21 @@
 require "pry"
 
-#word_list = [
-#  "fantastic", "midnight", "punished"
-#]
 word_list = IO.readlines('/usr/share/dict/words').delete_if {|x| (x.chomp.length < 6) || (x.chomp.length > 8) || (x.downcase != x)}
 
+# non looping var init
 word = []
 board = []
 guess = ""
 replay = false
+hint_letters = []
 
 
 until replay
-
+  # looping var init
   done = false
+  check = false
   guesses_left = 6
+  hints_left = 2
   alpha_guessed = []
   play_again = ""
 
@@ -27,10 +28,9 @@ until replay
     puts "Puzzle: " + board * " "
     puts "Previous guesses: " + alpha_guessed * " "
     puts "You have #{guesses_left} remaining guesses"
-    print "Enter a letter or type 'solve': "
+    print "Enter a letter, type 'solve', or type 'hint': "
     guess = gets.chomp
-    if guess != "solve"
-      check = false
+    if (guess != "solve") && (guess != "hint")
       until check
         if ("a".."z").include? guess
           if alpha_guessed.include? guess
@@ -57,20 +57,33 @@ until replay
       else
         guesses_left -= 1
       end
-    else
+    elsif guess == "solve"
       puts "What do you think the word is?"
       guess = gets.chomp
       if guess != word * ""
         puts "That is incorrect."
         guesses_left -= 1
       end
+    else
+      if hints_left > 0
+        hint_letters = word - board
+        puts "Hint: The letter '#{hint_letters[rand]}' is part of the puzzle."
+        hints_left -= 1
+        puts "You have #{hints_left} hints remaining"
+        #binding.pry
+      else
+        puts "Sorry, you are out of hints."
+      end
+
     end
       if guesses_left == 0
+        puts
         puts "You have run out of gueeses, Game Over man!"
         puts "The word was #{word * ""}"
         done = true
       end
       if ((board.include? "_") == false) || ((guess == word * "") == true)
+        puts
         puts "The word IS #{word * ""}. You have won the game, CONGRATULATIONS!"
         done = true
       end
