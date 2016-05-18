@@ -1,6 +1,11 @@
 require "pry"
 
 word_list = IO.readlines('/usr/share/dict/words').delete_if {|x| (x.chomp.length < 6) || (x.chomp.length > 8) || (x.downcase != x)}
+# File.open('') do |f|
+#   f.each_line do |line|
+#     word_list.push line.chomp.downcase.split("")
+#   end
+# end
 
 # non looping var init
 word = []
@@ -21,6 +26,7 @@ until replay
 
   puts "Welcome to Hangman!"
   word = word_list[rand(0..(word_list.length-1))]
+  #word = word_list.sample
   word = word.chomp.split("")
   board = ["_"] * word.length
   until done
@@ -99,9 +105,3 @@ until replay
     replay = true
   end
 end
-
-
-
-
-
-#binding.pry
