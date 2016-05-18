@@ -18,14 +18,13 @@ hint_letters = []
 until replay
   # looping var init
   done = false
-  check = false
   guesses_left = 6
   hints_left = 2
   alpha_guessed = []
   play_again = ""
 
   puts "Welcome to Hangman!"
-  word = word_list[rand(0..(word_list.length-1))]
+  word = word_list[rand(0...(word_list.length))]
   #word = word_list.sample
   word = word.chomp.split("")
   board = ["_"] * word.length
@@ -37,6 +36,7 @@ until replay
     print "Enter a letter, type 'solve', or type 'hint': "
     guess = gets.chomp
     if (guess != "solve") && (guess != "hint")
+      check = false
       until check
         if ("a".."z").include? guess
           if alpha_guessed.include? guess
