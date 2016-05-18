@@ -1,8 +1,10 @@
 require "pry"
 
-word_list = [
-  "fantastic", "midnight", "punished"
-]
+#word_list = [
+#  "fantastic", "midnight", "punished"
+#]
+word_list = IO.readlines('/usr/share/dict/words').delete_if {|x| (x.chomp.length < 6) || (x.chomp.length > 8) || (x.downcase != x)}
+
 word = []
 board = []
 guess = ""
@@ -18,7 +20,7 @@ until replay
 
   puts "Welcome to Hangman!"
   word = word_list[rand(0..(word_list.length-1))]
-  word = word.split("")
+  word = word.chomp.split("")
   board = ["_"] * word.length
   until done
     puts
