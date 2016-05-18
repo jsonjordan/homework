@@ -21,55 +21,58 @@ until replay
   word = word.split("")
   board = ["_"] * word.length
   until done
+    puts
     puts "Puzzle: " + board * " "
     puts "Previous guesses: " + alpha_guessed * " "
     puts "You have #{guesses_left} remaining guesses"
-    print "Letter? "
+    print "Enter a letter or type 'solve': "
     guess = gets.chomp
-    check = false
-    until check
-      if ("a".."z").include? guess
-        if alpha_guessed.include? guess
-          print "You already guessed that letter, select another: "
-          guess = gets.chomp
+    if guess != "solve"
+      check = false
+      until check
+        if ("a".."z").include? guess
+          if alpha_guessed.include? guess
+            print "You already guessed that letter, select another: "
+            guess = gets.chomp
+          else
+            check = true
+          end
         else
-          check = true
+          print "You entered an invalid letter, try again: "
+          guess = gets.chomp
         end
+      end
+      alpha_guessed.push guess
+      i = 0
+      word.each do |s|
+        if s == guess
+          board[i] = guess
+        end
+        i += 1
+      end
+      if board.include? guess
+        guesses_left
       else
-        print "You entered an invalid letter, try again: "
-        guess = gets.chomp
+        guesses_left -= 1
+      end
+    else
+      puts "What do you think the word is?"
+      guess = gets.chomp
+      if guess != word * ""
+        puts "That is incorrect."
+        guesses_left -= 1
       end
     end
-    alpha_guessed.push guess
-    i = 0
-    word.each do |s|
-      if s == guess
-        board[i] = guess
+      if guesses_left == 0
+        puts "You have run out of gueeses, Game Over man!"
+        puts "The word was #{word * ""}"
+        done = true
       end
-      i += 1
-    end
-    if board.include? guess
-      guesses_left
-    else
-      guesses_left -= 1
-    end
-    if guesses_left == 0
-      puts "You have run out of gueeses, Game Over man!"
-      puts "The word was #{word * ""}"
-      done = true
-    end
-    if board.include? "_"
-    else
-      puts "You have won the game, CONGRATULATIONS!"
-      done = true
-    end
+      if ((board.include? "_") == false) || ((guess == word * "") == true)
+        puts "The word IS #{word * ""}. You have won the game, CONGRATULATIONS!"
+        done = true
+      end
   end
-  # puts "Do you want to play again? y or n"
-  # play_again = gets.chomp
-  # if play_again == "n"
-  #   replay = true
-  #   done = false
-
   until play_again == "n" || play_again == "y"
     puts "Do you want to play again? y or n"
     play_again = gets.chomp
