@@ -1,6 +1,6 @@
 require "pry"
-word_list = ["jason"]
-#word_list = IO.readlines('/usr/share/dict/words').delete_if {|x| (x.chomp.length < 6) || (x.chomp.length > 8) || (x.downcase != x)}
+#word_list = IO.readlines('/usr/share/dict/words').select {|x| (x.chomp.length > 6) && (x.chomp.length < 8) && (x.downcase == x)}
+word_list = File.open('/usr/share/dict/words').select {|x| (x.chomp.length > 6) && (x.chomp.length < 8) && (x.downcase == x)}
 # File.open('') do |f|
 #   f.each_line do |line|
 #     word_list.push line.chomp.downcase.split("")
