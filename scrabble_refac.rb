@@ -1,5 +1,7 @@
 require "pry"
 
+accepted_words = File.open('sowpods.txt').select {|x| x}
+
 word = nil
 current_player = 1
 
@@ -37,11 +39,27 @@ def setup_maxes players
 end
 
 def word_validation_check word
-  word = gets.chomp
-  until (word.to_i.to_s != word) || (word == "-1")
+  until word.to_i.to_s != word
     if word.to_i.to_s == word
-      puts "You must enter a word or enter '-1' to quit"
+      print "You must enter a WORD, try again: "
       word = gets.chomp
+    end
+  end
+  word
+end
+
+def word_acceptance_check word, db
+  check = false
+  until check
+    db.each do |a|
+      if a.chomp.downcase == word
+        check = true
+      end
+    end
+    if check == false
+      print "That is not a valid Scrabble word, try again: "
+      word = gets.chomp
+      word = word_validation_check word
     end
   end
   word
@@ -93,8 +111,12 @@ maxes = setup_maxes players
 until word.to_i == -1
   score = nil
   print "Player #{current_player}, enter your word or type '-1' to quit: "
-  word = word_validation_check word
+  word = gets.chomp
+
   unless word.to_i == -1
+    word = word_validation_check word
+    word = word_acceptance_check word, accepted_words
+
     score = calc_score word
 
     totals = update_totals totals, current_player, score
