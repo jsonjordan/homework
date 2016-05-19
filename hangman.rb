@@ -1,6 +1,6 @@
 require "pry"
 #word_list = IO.readlines('/usr/share/dict/words').select {|x| (x.chomp.length > 6) && (x.chomp.length < 8) && (x.downcase == x)}
-word_list = File.open('/usr/share/dict/words').select {|x| (x.chomp.length > 6) && (x.chomp.length < 8) && (x.downcase == x)}
+word_list = File.open('/usr/share/dict/words').select {|x| (x.chomp.length >= 6) && (x.chomp.length <= 8) && (x.downcase == x)}
 # File.open('') do |f|
 #   f.each_line do |line|
 #     word_list.push line.chomp.downcase.split("")
@@ -87,11 +87,12 @@ def get_valid_solve
 end
 
 def use_hint_and_update hints_left, word, board
+  puts
   if hints_left > 0
     hint_letters = word - board
     puts "Hint: The letter '#{hint_letters.sample}' is part of the puzzle."
     hints_left -= 1
-    puts "You have #{hints_left} hints remaining"
+    puts "You have #{hints_left} hints remaininßg"
   else
     puts "Sorry, you are out of hints."
   end
