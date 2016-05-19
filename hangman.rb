@@ -157,8 +157,8 @@ until replay? play_again
 
     if (guess != "solve") && (guess != "hint")
       guess = get_valid_letter guess, alpha_guessed
-      alpha_guessed = update_guessed_letter guess, alpha_guessed
-      board = update_board word, board, guess
+      update_guessed_letter guess, alpha_guessed
+      update_board word, board, guess
       guesses_left = update_guesses_letter board, guess, guesses_left
     elsif guess == "solve"
       guess = get_valid_solve
