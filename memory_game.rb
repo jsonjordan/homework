@@ -7,7 +7,7 @@ key = [
   "d1", "d2", "d3", "d4"
 ]
 
-def init_board key
+def init_game_board key
   board = [
     "░", "░", "░", "░",
     "░", "░", "░", "░",
@@ -18,16 +18,20 @@ def init_board key
 end
 
 def init_answer_board
+  # answer = [
+  #   "Æ", "¥", "£", "þ",
+  #   "¢", "¿", "Æ", "Ø",
+  #   "þ", "£", "¢", "¿",
+  #   "¥", "Ø", "®", "®"
+  # ]
   answer = [
-    "Æ", "¥", "£", "þ",
-    "¢", "¿", "Æ", "Ø",
-    "þ", "£", "¢", "¿",
-    "¥", "Ø", "®", "®"
+    1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8
   ]
-  answer.shuffle
+
+  #answer.shuffle
 end
 
-def init_answerkey_hash answer, key
+def init_answer_key answer, key
   Hash[key.zip(answer)]
 end
 
@@ -35,21 +39,25 @@ def player_wants_to_quit
   false
 end
 
-def game_over
-  #victory condition
-  false
-end
-
-def display_key board
-  [0,4,8,12].each do |start|
-    stop = start + 3
-    start.upto stop do |i|
-      print "#{board[i]} "
-    end
-    puts
+def game_over? game_board, answer_key
+  if game_board == answer_key
+    puts "CONGRATULATIONS!  You did it!"
+    return true
+  else
+    return false
   end
 end
 
+def display_key board
+  puts
+  puts "    key"
+  puts board.values_at(0,1,2,3).join " "
+  puts board.values_at(4,5,6,7).join " "
+  puts board.values_at(8,9,10,11).join " "
+  puts board.values_at(12,13,14,15).join " "
+end
+
+def display_board board
   puts board.values_at("a1", "a2", "a3", "a4").join " "
   puts board.values_at("b1", "b2", "b3", "b4").join " "
   puts board.values_at("c1", "c2", "c3", "c4").join " "
@@ -70,11 +78,11 @@ def choose_cards
   pair
 end
 
-def display_temp_board temp_board, answer_key, cards
-  temp_board[cards.first] = answer_key[cards.first]
-  temp_board[cards.last] = answer_key[cards.last]
+def display_temp_board board, answer_key, cards
+  board[cards.first] = answer_key[cards.first]
+  board[cards.last] = answer_key[cards.last]
 
-  display_game_board temp_board
+  display_board board
   puts
 end
 
@@ -85,24 +93,24 @@ def check_match board, answer_key, cards
   end
 end
 
-game_board = init_board key
-answer = init_answer_board
-ultimate = init_answerkey_hash answer, key
-
-
 until player_wants_to_quit
+  game_board = init_game_board key
+  answer = init_answer_board
+  answer_key = init_answer_key answer, key
+
+
   #play game one time
-  until game_over
-    display_game_board game_board
-    puts
-    puts "    key"
+  until game_over? game_board, answer_key
+    display_board game_board
     display_key key
     cards = choose_cards
     temp_board = game_board.clone
-    display_temp_board temp_board, ultimate, cards
-    check_match game_board, ultimate, cards
+    display_temp_board temp_board, answer_key, cards
+    check_match game_board, answer_key, cards
     puts "Press [enter] to continue"
     gets
     system "clear"
   end
+  puts
+  puts "Would you like to play again?"
 end
