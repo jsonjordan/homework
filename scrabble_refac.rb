@@ -24,6 +24,17 @@ def setup_maxes players
   maxes
 end
 
+def word_validation_check word
+  word = gets.chomp
+  until (word.to_i.to_s != word) || (word == "-1")
+    if word.to_i.to_s == word
+      puts "You must enter a word or enter '-1' to quit"
+      word = gets.chomp
+    end
+  end
+  word
+end
+
 def calc_score word
   #do stuff
   10
@@ -49,14 +60,15 @@ def increment_player current_player, players
   current_player
 end
 
-def final_scores totals
+def final_scores totals, maxes
   puts "Final scores:"
   i = 1
   totals.each do |total|
-    puts "Player #{i}: #{total}"
+    puts "Player #{i} - Total: #{total}  Max: #{maxes[i-1]}"
     i += 1
   end
 end
+
 
 puts "Welcome to the Scrabble Score Keeper!"
 players = setup_players
@@ -66,7 +78,7 @@ maxes = setup_maxes players
 until word.to_i == -1
   score = nil
   print "Player #{current_player}, enter your word or type '-1' to quit: "
-  word = gets.chomp
+  word = word_validation_check word
   unless word.to_i == -1
     score = calc_score word
 
@@ -77,4 +89,4 @@ until word.to_i == -1
   end
 end
 
-final_scores totals
+final_scores totals, maxes
