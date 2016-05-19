@@ -39,13 +39,19 @@ def player_wants_to_quit
   false
 end
 
-def game_over? game_board, answer_key
+def game_over? game_board, answer_key, round
   if game_board == answer_key
     puts "CONGRATULATIONS!  You did it!"
+    puts "It took you #{round} rounds, not bad!"
     return true
   else
     return false
   end
+end
+
+def display_round round
+  puts
+  puts "Round #{round}"
 end
 
 def display_key board
@@ -58,6 +64,7 @@ def display_key board
 end
 
 def display_board board
+  puts
   puts board.values_at("a1", "a2", "a3", "a4").join " "
   puts board.values_at("b1", "b2", "b3", "b4").join " "
   puts board.values_at("c1", "c2", "c3", "c4").join " "
@@ -83,7 +90,6 @@ def display_temp_board board, answer_key, cards
   board[cards.last] = answer_key[cards.last]
 
   display_board board
-  puts
 end
 
 def check_match board, answer_key, cards
@@ -93,23 +99,31 @@ def check_match board, answer_key, cards
   end
 end
 
+def start_next_round
+  puts
+  puts "Press [enter] to continue"
+  gets
+  system "clear"
+end
+
 until player_wants_to_quit
+  round = 1
   game_board = init_game_board key
   answer = init_answer_board
   answer_key = init_answer_key answer, key
 
 
   #play game one time
-  until game_over? game_board, answer_key
+  until game_over? game_board, answer_key, round
+    display_round round
     display_board game_board
     display_key key
     cards = choose_cards
     temp_board = game_board.clone
     display_temp_board temp_board, answer_key, cards
     check_match game_board, answer_key, cards
-    puts "Press [enter] to continue"
-    gets
-    system "clear"
+    round += 1
+    start_next_round
   end
   puts
   puts "Would you like to play again?"
