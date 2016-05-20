@@ -18,6 +18,13 @@ def init_game_board key
 end
 
 def init_answer_board
+  symbols = [
+    "Æ", "¥", "£", "þ",
+    "¢", "¿", "Ø", "®",
+    "§", "¶", "±", "√",
+    "π", "∞", "⋰", "Ω",
+    "ڲ", "₪", "企", "β"
+  ]
   # answer = [
   #   "Æ", "¥", "£", "þ",
   #   "¢", "¿", "Æ", "Ø",
@@ -27,7 +34,7 @@ def init_answer_board
   answer = [
     1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8
   ]
-  # 
+  #
   # answer.shuffle
 end
 
@@ -149,10 +156,10 @@ end
 # impliment player_wants_to_quit
 # impliment quit during game
 # refactor using .map
-# look in to changing text color and size
+# look into changing text color and size
 # impliment method that will display any board (array or hash)
 # make board size dynamic (from 2x2 up)
-    # - auto generate key
+    # - auto generate key (see generated_key.rb)
     # - auto generate game_board  my_array = ["░"] * board_elements
     # - auto generate answer_board  symbols_array.select push in twice till full
-    # - create dynamic display_board
+    # - create dynamic display_board (see display_board_dynamic)
