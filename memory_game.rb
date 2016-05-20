@@ -27,8 +27,8 @@ def init_answer_board
   answer = [
     1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8
   ]
-
-  #answer.shuffle
+  # 
+  # answer.shuffle
 end
 
 def init_answer_key answer, key
@@ -41,8 +41,9 @@ end
 
 def game_over? game_board, answer_key, round
   if game_board == answer_key
+    puts
     puts "CONGRATULATIONS!  You did it!"
-    puts "It took you #{round} rounds, not bad!"
+    puts "It took you #{round - 1} rounds, not bad!"
     return true
   else
     return false
@@ -71,6 +72,20 @@ def display_board board
   puts board.values_at("d1", "d2", "d3", "d4").join " "
 end
 
+def display_board_dynamic board, key
+  puts
+  i = 0
+  key.each do |e|
+    if (i % 4 == 3)
+      puts board.values_at(e).join""
+    else
+      print board.values_at(e).join""
+      print " "
+    end
+    i += 1
+  end
+end
+
 def choose_cards
   puts
   pair = []
@@ -85,11 +100,11 @@ def choose_cards
   pair
 end
 
-def display_temp_board board, answer_key, cards
+def display_temp_board board, answer_key, cards, key
   board[cards.first] = answer_key[cards.first]
   board[cards.last] = answer_key[cards.last]
 
-  display_board board
+  display_board_dynamic board, key
 end
 
 def check_match board, answer_key, cards
@@ -116,11 +131,12 @@ until player_wants_to_quit
   #play game one time
   until game_over? game_board, answer_key, round
     display_round round
-    display_board game_board
+    #display_board game_board
+    display_board_dynamic game_board, key
     display_key key
     cards = choose_cards
     temp_board = game_board.clone
-    display_temp_board temp_board, answer_key, cards
+    display_temp_board temp_board, answer_key, cards, key
     check_match game_board, answer_key, cards
     round += 1
     start_next_round
@@ -128,3 +144,15 @@ until player_wants_to_quit
   puts
   puts "Would you like to play again?"
 end
+
+# input validations
+# impliment player_wants_to_quit
+# impliment quit during game
+# refactor using .map
+# look in to changing text color and size
+# impliment method that will display any board (array or hash)
+# make board size dynamic (from 2x2 up)
+    # - auto generate key
+    # - auto generate game_board  my_array = ["░"] * board_elements
+    # - auto generate answer_board  symbols_array.select push in twice till full
+    # - create dynamic display_board
