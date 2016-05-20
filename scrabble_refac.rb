@@ -1,6 +1,6 @@
 require "pry"
 
-accepted_words = File.open('sowpods.txt').select {|x| x}
+accepted_words = File.open('sowpods.txt').to_a
 
 word = nil
 current_player = 1
@@ -93,9 +93,9 @@ def display_current_score word, score
 end
 
 def display_updtated_scores totals, maxes
-  i = 1
+  i = 0
   totals.each do |total|
-    puts "Player #{i} - Total: #{total}  Max: #{maxes[i-1]}"
+    puts "Player #{i} - Total: #{total}  Max: #{maxes[i]}"
     i += 1
   end
 end
