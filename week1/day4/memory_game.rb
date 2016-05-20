@@ -31,7 +31,10 @@ def init_game_board key
   Hash[key.zip(board)]
 end
 
-def init_answer_board
+def init_symbols dimensions
+  #symbols_array.select push in twice till full
+  answer = []
+  selection = ""
   symbols = [
     "Æ", "¥", "£", "þ",
     "¢", "¿", "Ø", "®",
@@ -43,15 +46,20 @@ def init_answer_board
     "⎈", "☭", "♢", "♉︎"
   ]
 
+  selection = symbols.sample(dimensions.inject(:*)/2)
+  answer.push(selection).push(selection).flatten!.shuffle
+
+
+
   # answer = [
   #   "Æ", "¥", "£", "þ",
   #   "¢", "¿", "Æ", "Ø",
   #   "þ", "£", "¢", "¿",
   #   "¥", "Ø", "®", "®"
   # ]
-  answer = [
-    1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8
-  ]
+  # answer = [
+  #   1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8
+  # ]
   #
   # answer.shuffle
 end
@@ -176,11 +184,12 @@ end
 
 until replay? replay
   round = 1
-  key = generate_key get_dimensions
+  dimensions = get_dimensions
+  key = generate_key dimensions
   game_board = init_game_board key
-  answer = init_answer_board
+  answer = init_symbols dimensions
   answer_key = init_answer_key answer, key
-binding.pry
+  binding.pry
 
   #play game one time
   until game_over? game_board, answer_key, round
