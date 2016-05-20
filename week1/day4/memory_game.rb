@@ -152,7 +152,7 @@ until player_wants_to_quit
   puts "Would you like to play again?"
 end
 
-# input validations
+# input validations on choose_cards
 # impliment player_wants_to_quit
 # impliment quit during game
 # refactor using .map
@@ -162,4 +162,6 @@ end
     # - auto generate key (see generated_key.rb)
     # - auto generate game_board  my_array = ["░"] * board_elements
     # - auto generate answer_board  symbols_array.select push in twice till full
+      # - no repeats!
+      # - add around 5 more symbols (use edit - emoji and symbols)
     # - create dynamic display_board (see display_board_dynamic)
