@@ -1,20 +1,33 @@
 require "pry"
 replay = ""
 
-key = [
-  "a1", "a2", "a3", "a4",
-  "b1", "b2", "b3", "b4",
-  "c1", "c2", "c3", "c4",
-  "d1", "d2", "d3", "d4"
-]
+# look at .center
+
+# key = [
+#   "a1", "a2", "a3", "a4",
+#   "b1", "b2", "b3", "b4",
+#   "c1", "c2", "c3", "c4",
+#   "d1", "d2", "d3", "d4"
+# ]
+
+def get_dimensions
+  dimensions = []
+  puts "enter horizontal dimension for board"
+  dim_x = gets.chomp.to_i
+  dimensions.push dim_x
+  puts "enter vertical dimension for board"
+  dim_y = gets.chomp.to_i
+  dimensions.push dim_y
+
+  dimensions
+end
+
+def generate_key dimensions
+  key = (1..(dimensions.first*dimensions.last)).to_a
+end
 
 def init_game_board key
-  board = [
-    "🂠", "🂠", "🂠", "🂠",
-    "🂠", "🂠", "🂠", "🂠",
-    "🂠", "🂠", "🂠", "🂠",
-    "🂠", "🂠", "🂠", "🂠"
-  ]
+  board = ["🂠"]*key.length
   Hash[key.zip(board)]
 end
 
@@ -163,10 +176,11 @@ end
 
 until replay? replay
   round = 1
+  key = generate_key get_dimensions
   game_board = init_game_board key
   answer = init_answer_board
   answer_key = init_answer_key answer, key
-
+binding.pry
 
   #play game one time
   until game_over? game_board, answer_key, round
@@ -187,19 +201,12 @@ until replay? replay
   replay = replay_check
 end
 
-# input validations on choose_cards - done
-# impliment replay? - done
-# impliment replay_check - done
+
 # refactor using .map
-# look into changing text color and size - not worth it
 # impliment method that will display any board (array or hash)
 # make board size dynamic (from 2x2 up)
     # - auto generate key (see generated_key.rb)
     # - auto generate game_board  my_array = ["░"] * board_elements
     # - auto generate answer_board  symbols_array.select push in twice till full
       # - no repeats!
-      # - add around 5 more symbols (use edit - emoji and symbols) - done
-    # - create dynamic display_board (see display_board_dynamic)
-# change display_temp_board to show_cards - done
 # allow user to select both dimensions
-# make difficulty levels (numbers, colors, symbols) - not worth it
