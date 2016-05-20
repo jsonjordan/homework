@@ -1,4 +1,5 @@
 require "pry"
+replay = ""
 
 key = [
   "a1", "a2", "a3", "a4",
@@ -9,10 +10,10 @@ key = [
 
 def init_game_board key
   board = [
-    "░", "░", "░", "░",
-    "░", "░", "░", "░",
-    "░", "░", "░", "░",
-    "░", "░", "░", "░"
+    "🂠", "🂠", "🂠", "🂠",
+    "🂠", "🂠", "🂠", "🂠",
+    "🂠", "🂠", "🂠", "🂠",
+    "🂠", "🂠", "🂠", "🂠"
   ]
   Hash[key.zip(board)]
 end
@@ -23,8 +24,12 @@ def init_answer_board
     "¢", "¿", "Ø", "®",
     "§", "¶", "±", "√",
     "π", "∞", "⋰", "Ω",
-    "ڲ", "₪", "企", "β"
+    "ڲ", "₪", "企", "β",
+    "♡", "♊︎", "♐︎", "✖︎",
+    "♇", "▷", "☆", "⌘",
+    "⎈", "☭", "♢", "♉︎"
   ]
+
   # answer = [
   #   "Æ", "¥", "£", "þ",
   #   "¢", "¿", "Æ", "Ø",
@@ -42,8 +47,20 @@ def init_answer_key answer, key
   Hash[key.zip(answer)]
 end
 
-def player_wants_to_quit
-  false
+def replay? replay
+  replay == "n"
+end
+
+def replay_check
+  replay = ""
+  until replay == "n" || replay == "y"
+    puts "Do you want to play again? y or n"
+    replay = gets.chomp
+    if replay != "n" && replay != "y"
+      puts "You must select y (for yes) or n (for no)!"
+    end
+  end
+  replay
 end
 
 def game_over? game_board, answer_key, round
@@ -93,21 +110,37 @@ def display_board_dynamic board, key
   end
 end
 
-def choose_cards
+def choose_cards key
   puts
-  pair = []
-  print "select your first card: "
-  card_1 = gets.chomp
-  pair.push card_1
-
-  print "select your second card: "
-  card_2 = gets.chomp
-  pair.push card_2
-
+  validation = false
+  until validation
+    pair = []
+    print "select your first card or 'quit' to quit > "
+    card_1 = gets.chomp
+    if card_1 == "quit"
+      validation = true
+      return card_1
+    else
+      pair.push card_1
+      print "select your second card > "
+      card_2 = gets.chomp
+      pair.push card_2
+      validation = card_validation pair, key
+    end
+  end
   pair
 end
 
-def display_temp_board board, answer_key, cards, key
+def card_validation cards, key
+  if (key.include? cards.first) && (key.include? cards.last)
+    true
+  else
+    puts "invalid selection, select again"
+    false
+  end
+end
+
+def show_cards board, answer_key, cards, key
   board[cards.first] = answer_key[cards.first]
   board[cards.last] = answer_key[cards.last]
 
@@ -128,7 +161,7 @@ def start_next_round
   system "clear"
 end
 
-until player_wants_to_quit
+until replay? replay
   round = 1
   game_board = init_game_board key
   answer = init_answer_board
@@ -138,30 +171,35 @@ until player_wants_to_quit
   #play game one time
   until game_over? game_board, answer_key, round
     display_round round
-    #display_board game_board
     display_board_dynamic game_board, key
     display_key key
-    cards = choose_cards
-    temp_board = game_board.clone
-    display_temp_board temp_board, answer_key, cards, key
-    check_match game_board, answer_key, cards
-    round += 1
-    start_next_round
+    cards = choose_cards key
+    if cards == "quit"
+      break
+    else
+      temp_board = game_board.clone
+      show_cards temp_board, answer_key, cards, key
+      check_match game_board, answer_key, cards
+      round += 1
+      start_next_round
+    end
   end
-  puts
-  puts "Would you like to play again?"
+  replay = replay_check
 end
 
-# input validations on choose_cards
-# impliment player_wants_to_quit
-# impliment quit during game
+# input validations on choose_cards - done
+# impliment replay? - done
+# impliment replay_check - done
 # refactor using .map
-# look into changing text color and size
+# look into changing text color and size - not worth it
 # impliment method that will display any board (array or hash)
 # make board size dynamic (from 2x2 up)
     # - auto generate key (see generated_key.rb)
     # - auto generate game_board  my_array = ["░"] * board_elements
     # - auto generate answer_board  symbols_array.select push in twice till full
       # - no repeats!
-      # - add around 5 more symbols (use edit - emoji and symbols)
+      # - add around 5 more symbols (use edit - emoji and symbols) - done
     # - create dynamic display_board (see display_board_dynamic)
+# change display_temp_board to show_cards - done
+# allow user to select both dimensions
+# make difficulty levels (numbers, colors, symbols) - not worth it
