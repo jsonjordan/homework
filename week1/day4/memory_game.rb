@@ -18,18 +18,41 @@ end
 
 def get_dimensions
   dimensions = []
+  dim_x = 1
+  dim_y = 1
   puts "Lets set up the board!"
+  puts "* Note: the product of the two dimensions must be even"
   puts
-  puts "Enter horizontal dimension for the board (2-8)"
-  print "> "
-  dim_x = gets.chomp.to_i
+  until (dim_x * dim_y).even?
+    validation = false
+    until validation
+      puts "Enter horizontal dimension for the board (2-8)"
+      print "> "
+      dim_x = gets.chomp.to_i
+      validation = dimension_validation dim_x
+    end
+    validation = false
+    until validation
+      puts "Enter vertical dimension for the board (2-8)"
+      print "> "
+      dim_y = gets.chomp.to_i
+      validation = dimension_validation dim_y
+    end
+    puts "product not even, try again" if (dim_x * dim_y).odd?
+  end
   dimensions.push dim_x
-  puts "Enter vertical dimension for the board (2-8)"
-  print "> "
-  dim_y = gets.chomp.to_i
   dimensions.push dim_y
-
   dimensions
+end
+
+def dimension_validation dimension
+  if (2..8).to_a.include? dimension
+    return true
+  else
+    puts "invalid selection, select again"
+    puts
+    return false
+  end
 end
 
 def generate_grid dimensions
@@ -76,11 +99,13 @@ def replay_check
   replay
 end
 
-def game_over? game_board, answer_key, round
+def game_over? game_board, answer_key, round, grid, dimensions
   if game_board == answer_key
     puts
     puts "CONGRATULATIONS!  You did it!"
     puts "It took you #{round - 1} rounds, not bad!"
+
+    display_board_dynamic game_board, grid, dimensions
     return true
   else
     return false
@@ -130,6 +155,37 @@ def display_board_dynamic board, grid, dimensions
   end
 end
 
+def choose_first_card grid
+  puts
+  validation = false
+  until validation
+    print "select your first card or 'quit' to quit > "
+    card_1 = gets.chomp
+    if card_1 == "quit"
+      validation = true
+    else
+      validation = card_validation, card, grid
+    end
+  end
+  card_1
+end
+
+def choose_card grid
+  puts
+  validation = false
+  until validation
+    print "select a card or type 'quit' to quit > "
+    card = gets.chomp
+    if card == "quit"
+      validation = true
+    else
+      card = card.to_i
+      validation = card_validation card, grid
+    end
+  end
+  card
+end
+
 def choose_cards grid
   puts
   validation = false
@@ -151,8 +207,8 @@ def choose_cards grid
   pair
 end
 
-def card_validation cards, grid
-  if (grid.include? cards.first) && (grid.include? cards.last)
+def card_validation card, grid
+  if (grid.include? card) #(grid.include? cards.first) && (grid.include? cards.last)
     true
   else
     puts "invalid selection, select again"
@@ -161,18 +217,20 @@ def card_validation cards, grid
   end
 end
 
-def show_cards board, answer_key, cards
-  board[cards.first] = answer_key[cards.first]
-  board[cards.last] = answer_key[cards.last]
+def show_card board, answer_key, card
+  board[card] = answer_key[card]
+
+  # board[cards.first] = answer_key[cards.first]
+  # board[cards.last] = answer_key[cards.last]
   board
 
   #display_board_dynamic board, grid
 end
 
-def check_for_match board, answer_key, cards
-  if answer_key[cards.first] == answer_key[cards.last]
-      board[cards.first] = answer_key[cards.first]
-      board[cards.last] = answer_key[cards.last]
+def check_for_match board, answer_key, card_1, card_2
+  if answer_key[card_1] == answer_key[card_2]
+      board[card_1] = answer_key[card_1]
+      board[card_2] = answer_key[card_2]
   end
 end
 
@@ -192,33 +250,33 @@ until replay? replay
   game_board = generate_game_board grid
   answer_key = generate_answer_key random_symbols(dimensions,symbol_database), grid
   #play game one time
-  until game_over? game_board, answer_key, round
+  until game_over? game_board, answer_key, round, grid, dimensions
     display_round round
     display_board_dynamic game_board, grid, dimensions
     display_grid_dynamic grid, dimensions
-    cards = choose_cards grid
-    if cards == "quit"
-      break
-    else
-      temp_board = game_board.clone
-      #show_cards temp_board, answer_key, cards, grid
-      display_board_dynamic show_cards(temp_board, answer_key, cards), grid, dimensions
-      check_for_match game_board, answer_key, cards
+    card_1 = choose_card grid
+    break if card_1 == "quit"
+    temp_board = game_board.clone
+    display_board_dynamic show_card(temp_board, answer_key, card_1), grid, dimensions
+    card_2 = choose_card grid
+    break if card_2 == "quit"
+    display_board_dynamic show_card(temp_board, answer_key, card_2), grid, dimensions
+      check_for_match game_board, answer_key, card_1, card_2
       round += 1
       start_next_round
-    end
+
   end
   replay = replay_check
 end
 
 
-# refactor using .map
+# refactor using .map - not needed
 # impliment method that will display any board (array or hash)
 # fix displays for new dynamic dimensions - done
 # change card slection to choose one card, show updated board, choose second card, show updated board.
 # with colorize, add color to flipped cards
 # add player 1-2 options, keep score
 # play with taking matches off the board
-# look at .center
+# look at .center - done
 # make a function called symbol_database - done
 # change key to grid - done
