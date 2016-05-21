@@ -20,11 +20,11 @@ def get_dimensions
   dimensions = []
   puts "Lets set up the board!"
   puts
-  puts "Enter horizontal dimension for the board(2-8)"
+  puts "Enter horizontal dimension for the board (2-8)"
   print "> "
   dim_x = gets.chomp.to_i
   dimensions.push dim_x
-  puts "Enter vertical dimension for the board(2-8)"
+  puts "Enter vertical dimension for the board (2-8)"
   print "> "
   dim_y = gets.chomp.to_i
   dimensions.push dim_y
@@ -141,10 +141,10 @@ def choose_cards grid
       validation = true
       return card_1
     else
-      pair.push card_1
+      pair.push card_1.to_i
       print "select your second card > "
       card_2 = gets.chomp
-      pair.push card_2
+      pair.push card_2.to_i
       validation = card_validation pair, grid
     end
   end
@@ -156,15 +156,17 @@ def card_validation cards, grid
     true
   else
     puts "invalid selection, select again"
+    puts
     false
   end
 end
 
-def show_cards board, answer_key, cards, grid
+def show_cards board, answer_key, cards
   board[cards.first] = answer_key[cards.first]
   board[cards.last] = answer_key[cards.last]
+  board
 
-  display_board_dynamic board, grid
+  #display_board_dynamic board, grid
 end
 
 def check_for_match board, answer_key, cards
@@ -183,7 +185,8 @@ end
 
 until replay? replay
   round = 1
-  puts "Memory Game"
+  puts "~~Memory Game~~"
+  puts
   dimensions = get_dimensions
   grid = generate_grid dimensions
   game_board = generate_game_board grid
@@ -193,13 +196,13 @@ until replay? replay
     display_round round
     display_board_dynamic game_board, grid, dimensions
     display_grid_dynamic grid, dimensions
-    break
     cards = choose_cards grid
     if cards == "quit"
       break
     else
       temp_board = game_board.clone
-      show_cards temp_board, answer_key, cards, grid
+      #show_cards temp_board, answer_key, cards, grid
+      display_board_dynamic show_cards(temp_board, answer_key, cards), grid, dimensions
       check_for_match game_board, answer_key, cards
       round += 1
       start_next_round
