@@ -1,40 +1,9 @@
-require "pry"
+require 'pry'
+require 'colorize'
+
 replay = ""
 
-# look at .center
-
-# key = [
-#   "a1", "a2", "a3", "a4",
-#   "b1", "b2", "b3", "b4",
-#   "c1", "c2", "c3", "c4",
-#   "d1", "d2", "d3", "d4"
-# ]
-
-def get_dimensions
-  dimensions = []
-  puts "enter horizontal dimension for board"
-  dim_x = gets.chomp.to_i
-  dimensions.push dim_x
-  puts "enter vertical dimension for board"
-  dim_y = gets.chomp.to_i
-  dimensions.push dim_y
-
-  dimensions
-end
-
-def generate_key dimensions
-  key = (1..(dimensions.first*dimensions.last)).to_a
-end
-
-def init_game_board key
-  board = ["🂠"]*key.length
-  Hash[key.zip(board)]
-end
-
-def init_symbols dimensions
-  #symbols_array.select push in twice till full
-  answer = []
-  selection = ""
+def symbol_database
   symbols = [
     "Æ", "¥", "£", "þ",
     "¢", "¿", "Ø", "®",
@@ -45,27 +14,48 @@ def init_symbols dimensions
     "♇", "▷", "☆", "⌘",
     "⎈", "☭", "♢", "♉︎"
   ]
+end
 
-  selection = symbols.sample(dimensions.inject(:*)/2)
+def get_dimensions
+  dimensions = []
+  puts "Lets set up the board!"
+  puts
+  puts "Enter horizontal dimension for the board(2-8)"
+  print "> "
+  dim_x = gets.chomp.to_i
+  dimensions.push dim_x
+  puts "Enter vertical dimension for the board(2-8)"
+  print "> "
+  dim_y = gets.chomp.to_i
+  dimensions.push dim_y
+
+  dimensions
+end
+
+def generate_grid dimensions
+  grid = (1..(dimensions.first*dimensions.last)).to_a
+end
+
+def generate_game_board grid
+  board = ["🂠"]*grid.length
+  Hash[grid.zip(board)]
+end
+
+def random_symbols dimensions, db
+  answer = []
+  selection = ""
+
+  selection = db.sample(dimensions.inject(:*)/2)
   answer.push(selection).push(selection).flatten!.shuffle
 
-
-
-  # answer = [
-  #   "Æ", "¥", "£", "þ",
-  #   "¢", "¿", "Æ", "Ø",
-  #   "þ", "£", "¢", "¿",
-  #   "¥", "Ø", "®", "®"
-  # ]
   # answer = [
   #   1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8
   # ]
-  #
-  # answer.shuffle
+
 end
 
-def init_answer_key answer, key
-  Hash[key.zip(answer)]
+def generate_answer_key answer, grid
+  Hash[grid.zip(answer)]
 end
 
 def replay? replay
@@ -73,9 +63,11 @@ def replay? replay
 end
 
 def replay_check
+  puts
   replay = ""
   until replay == "n" || replay == "y"
     puts "Do you want to play again? y or n"
+    print "> "
     replay = gets.chomp
     if replay != "n" && replay != "y"
       puts "You must select y (for yes) or n (for no)!"
@@ -100,13 +92,19 @@ def display_round round
   puts "Round #{round}"
 end
 
-def display_key board
+def display_grid_dynamic board, dimensions
   puts
-  puts "    key"
-  puts board.values_at(0,1,2,3).join " "
-  puts board.values_at(4,5,6,7).join " "
-  puts board.values_at(8,9,10,11).join " "
-  puts board.values_at(12,13,14,15).join " "
+  puts "key".center(dimensions.first*4.5)
+  i = 0
+  board.each do |e|
+    if (i % dimensions.first == (dimensions.first - 1))
+      puts board[i].to_s.center(3)
+    else
+      print board[i].to_s.center(3)
+      print " "
+    end
+    i += 1
+  end
 end
 
 def display_board board
@@ -117,21 +115,22 @@ def display_board board
   puts board.values_at("d1", "d2", "d3", "d4").join " "
 end
 
-def display_board_dynamic board, key
+def display_board_dynamic board, grid, dimensions
   puts
+    puts "game board".center(dimensions.first*4)
   i = 0
-  key.each do |e|
-    if (i % 4 == 3)
-      puts board.values_at(e).join""
+  grid.each do |e|
+    if (i % dimensions.first == (dimensions.first - 1))
+      puts board.values_at(e).join.center(3)
     else
-      print board.values_at(e).join""
+      print board.values_at(e).join.center(3)
       print " "
     end
     i += 1
   end
 end
 
-def choose_cards key
+def choose_cards grid
   puts
   validation = false
   until validation
@@ -146,14 +145,14 @@ def choose_cards key
       print "select your second card > "
       card_2 = gets.chomp
       pair.push card_2
-      validation = card_validation pair, key
+      validation = card_validation pair, grid
     end
   end
   pair
 end
 
-def card_validation cards, key
-  if (key.include? cards.first) && (key.include? cards.last)
+def card_validation cards, grid
+  if (grid.include? cards.first) && (grid.include? cards.last)
     true
   else
     puts "invalid selection, select again"
@@ -161,14 +160,14 @@ def card_validation cards, key
   end
 end
 
-def show_cards board, answer_key, cards, key
+def show_cards board, answer_key, cards, grid
   board[cards.first] = answer_key[cards.first]
   board[cards.last] = answer_key[cards.last]
 
-  display_board_dynamic board, key
+  display_board_dynamic board, grid
 end
 
-def check_match board, answer_key, cards
+def check_for_match board, answer_key, cards
   if answer_key[cards.first] == answer_key[cards.last]
       board[cards.first] = answer_key[cards.first]
       board[cards.last] = answer_key[cards.last]
@@ -184,25 +183,24 @@ end
 
 until replay? replay
   round = 1
+  puts "Memory Game"
   dimensions = get_dimensions
-  key = generate_key dimensions
-  game_board = init_game_board key
-  answer = init_symbols dimensions
-  answer_key = init_answer_key answer, key
-  binding.pry
-
+  grid = generate_grid dimensions
+  game_board = generate_game_board grid
+  answer_key = generate_answer_key random_symbols(dimensions,symbol_database), grid
   #play game one time
   until game_over? game_board, answer_key, round
     display_round round
-    display_board_dynamic game_board, key
-    display_key key
-    cards = choose_cards key
+    display_board_dynamic game_board, grid, dimensions
+    display_grid_dynamic grid, dimensions
+    break
+    cards = choose_cards grid
     if cards == "quit"
       break
     else
       temp_board = game_board.clone
-      show_cards temp_board, answer_key, cards, key
-      check_match game_board, answer_key, cards
+      show_cards temp_board, answer_key, cards, grid
+      check_for_match game_board, answer_key, cards
       round += 1
       start_next_round
     end
@@ -213,9 +211,11 @@ end
 
 # refactor using .map
 # impliment method that will display any board (array or hash)
-# make board size dynamic (from 2x2 up)
-    # - auto generate key (see generated_key.rb)
-    # - auto generate game_board  my_array = ["░"] * board_elements
-    # - auto generate answer_board  symbols_array.select push in twice till full
-      # - no repeats!
-# allow user to select both dimensions
+# fix displays for new dynamic dimensions - done
+# change card slection to choose one card, show updated board, choose second card, show updated board.
+# with colorize, add color to flipped cards
+# add player 1-2 options, keep score
+# play with taking matches off the board
+# look at .center
+# make a function called symbol_database - done
+# change key to grid - done
