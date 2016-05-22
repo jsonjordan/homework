@@ -9,10 +9,10 @@ def symbol_database
     "¢", "¿", "Ø", "®",
     "§", "¶", "±", "√",
     "π", "∞", "⋰", "Ω",
-    "ڲ", "₪", "企", "β",
-    "♡", "♊︎", "♐︎", "✖︎",
+    "ڲ", "₪", "Ð", "β",
+    "€", "Œ", "@", "Ž",
     "♇", "▷", "☆", "⌘",
-    "⎈", "☭", "♢", "♉︎"
+    "⎈", "☭", "♢", "╬"
   ]
 end
 
@@ -64,6 +64,11 @@ def generate_game_board grid
   Hash[grid.zip(board)]
 end
 
+def generate_victory_board grid
+  board = [" "]*grid.length
+  Hash[grid.zip(board)]
+end
+
 def random_symbols dimensions, db
   answer = []
   selection = ""
@@ -100,12 +105,12 @@ def replay_check
 end
 
 def game_over? game_board, answer_key, round, grid, dimensions
-  if game_board == answer_key
+  if game_board == (generate_victory_board grid)
     puts
     puts "CONGRATULATIONS!  You did it!"
     puts "It took you #{round - 1} rounds, not bad!"
 
-    display_board_dynamic game_board, grid, dimensions
+    display_board_dynamic answer_key, grid, dimensions
     return true
   else
     return false
@@ -123,10 +128,10 @@ def display_grid_dynamic board, dimensions
   i = 0
   board.each do |e|
     if (i % dimensions.first == (dimensions.first - 1))
-      puts board[i].to_s.center(3)
+      puts board[i].to_s.center(4)
     else
-      print board[i].to_s.center(3)
-      print " "
+      print board[i].to_s.center(4)
+      #print " "
     end
     i += 1
   end
@@ -146,10 +151,10 @@ def display_board_dynamic board, grid, dimensions
   i = 0
   grid.each do |e|
     if (i % dimensions.first == (dimensions.first - 1))
-      puts board.values_at(e).join.center(3)
+      puts board.values_at(e).join.center(4)
     else
-      print board.values_at(e).join.center(3)
-      print " "
+      print board.values_at(e).join.center(4)
+      #print "  "
     end
     i += 1
   end
@@ -229,8 +234,10 @@ end
 
 def check_for_match board, answer_key, card_1, card_2
   if answer_key[card_1] == answer_key[card_2]
-      board[card_1] = answer_key[card_1]
-      board[card_2] = answer_key[card_2]
+      # board[card_1] = answer_key[card_1]
+      # board[card_2] = answer_key[card_2]
+      board[card_1] = " "
+      board[card_2] = " "
   end
 end
 
@@ -255,28 +262,21 @@ until replay? replay
     display_board_dynamic game_board, grid, dimensions
     display_grid_dynamic grid, dimensions
     card_1 = choose_card grid
-    break if card_1 == "quit"
+  break if card_1 == "quit"
     temp_board = game_board.clone
     display_board_dynamic show_card(temp_board, answer_key, card_1), grid, dimensions
     card_2 = choose_card grid
-    break if card_2 == "quit"
+  break if card_2 == "quit"
     display_board_dynamic show_card(temp_board, answer_key, card_2), grid, dimensions
-      check_for_match game_board, answer_key, card_1, card_2
-      round += 1
-      start_next_round
-
+    check_for_match game_board, answer_key, card_1, card_2
+    round += 1
+    start_next_round
   end
   replay = replay_check
 end
 
 
-# refactor using .map - not needed
-# impliment method that will display any board (array or hash)
-# fix displays for new dynamic dimensions - done
-# change card slection to choose one card, show updated board, choose second card, show updated board.
+
 # with colorize, add color to flipped cards
 # add player 1-2 options, keep score
 # play with taking matches off the board
-# look at .center - done
-# make a function called symbol_database - done
-# change key to grid - done
